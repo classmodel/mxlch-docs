@@ -1,0 +1,592 @@
+\documentclass[twoside,11pt,fleqn,a4paper,english,openright]{report}
+
+\usepackage{psfrag}		% Hiermee kun je tekst vanuit latex in een eps-figuur zetten (ook gedraaid e.d.)
+\usepackage{babel} 		% Afbreken van woorden in vreemde talen & Engels
+%\usepackage{psfig, epsfig}	% volgens mij onnodig door graphicsx
+\usepackage{amsfonts}		% Nodig om normale tekst in formules te zetten
+\usepackage{amsmath}		% Nodig voor bijzondere formule-structuren, incl. align
+\usepackage{amssymb}		% Nodig om redelijk standaard symbolen weer te geven (vooral dingen als \lesssim)
+\usepackage{palatino}		% textfont: roman, sans-serif, monospace wordt Palatino, Helevetica, Courier
+\usepackage[round]{natbib}	% bibliography \citet zorgt voor auteur en (jaartal) \citep is (a, j) 
+\usepackage{tocbibind}		% Stopt TOC, List of Tables, List of Figures, bib en Index in de TOC
+\usepackage[breaklinks=true]{hyperref}		% Alle referenties worden links
+\usepackage[small,bf]{caption}	% Caption mooi krijgen.
+\usepackage{supertabular} 	% Tabellen op meerdere pagina's
+\usepackage{longtable}		% Supertabular, maar de kolommen blijven dezelfde grootte
+\usepackage{float}		% Je kunt figuren `here` plaatsen met H
+\usepackage{placeins}		% Package zorgt voor floatbarier voor elke section + zelf gedefinieerd
+\usepackage{mdwlist}		% Kan dingen met lijsten. Geeft ook de optie itemize* (geen witregels tussen items)
+\usepackage{multirow}		% Combine multiple rows within a tabular
+
+
+\topmargin= -5 mm
+\textwidth 15.5cm
+\voffset 0cm
+%\hoffset -1 cm
+\textheight 23cm
+\oddsidemargin  0mm
+\evensidemargin 0mm
+\marginparwidth 1.0cm
+\headheight 14pt
+\setlength{\abovecaptionskip}{-10pt}
+\setlength{\belowcaptionskip}{0pt}
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\addtolength{\headwidth}{\marginparsep}
+\addtolength{\headwidth}{0.5\marginparwidth}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}{}}
+\fancyhf{}
+\fancyfoot[RO,LE]{\bfseries\thepage}
+\fancyhead[LE]{\bfseries\rightmark}
+\fancyhead[RO]{\bfseries\leftmark}
+
+% redefine plain style
+\fancypagestyle{plain}{%
+\fancyhf{}
+\renewcommand{\headheight}{14pt}
+\fancyfoot[RO,LE]{\bfseries\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+}
+
+\def\degrees{\ifmmode^\circ\else$^\circ$\fi}
+
+\def\slfrac#1#2{{\mathord{\mathchoice   % 
+        {\kern.1em\raise.5ex\hbox{$\scriptstyle#1$}\kern-.1em
+        /\kern-.15em\lower.25ex\hbox{$\scriptstyle#2$}}
+        {\kern.1em\raise.5ex\hbox{$\scriptstyle#1$}\kern-.1em
+        /\kern-.15em\lower.25ex\hbox{$\scriptstyle#2$}}
+        {\kern.1em\raise.4ex\hbox{$\scriptscriptstyle#1$}\kern-.1em
+        /\kern-.14em\lower.25ex\hbox{$\scriptscriptstyle#2$}}
+        {\kern.1em\raise.2ex\hbox{$\scriptscriptstyle#1$}\kern-.1em
+        /\kern-.1em\lower.25ex\hbox{$\scriptscriptstyle#2$}}}}}
+
+\begin{document}
+\pagenumbering{Roman}
+ \begin{titlepage}
+  \title{\textbf{MiXed Layer CHemistry (MXLCH) model:\\
+		 Users Guide}}
+  \author{Kees van den Dries\\
+          Huug Ouwersloot\\
+          Jordi Vil\`a-Guerau de Arellano\\
+\\
+Meteorology and Air Quality Section\\
+Wageningen University (The Netherlands)
+\\
+e-mail: jordi.vila@wur.nl }
+  \maketitle
+ \end{titlepage}
+\thispagestyle{empty}
+
+\tableofcontents
+\addtocontents{toc}{\protect}
+%\listoftables
+\chapter{Introduction}\label{chapter:introduction}
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+This document gives information of the input files
+for the current version of the MiXed Layer model with CHemistry (MXLCH). 
+In short, the model solves simultaneously the temporal evolution of potential
+temperature, specific humidity, wind and reactant species in a diurnal
+convective boundary layer.
+
+The chemical mechanisms in MXLCH are very flexible offering the possibility of adding and
+removing chemical species and reactants.
+Here we provide an example of a {\it reduced} chemical system and a {\it complex} one.
+The chemical input files for the one way can not be used for the other, but they can be modified
+and adjusted accordingly by the user.
+An overview of all namelist options is given in Chapter \ref{chapter:namoptions}. 
+In Chapter \ref{chapter:inputfiles} the input files for chemistry are discussed. In Section \ref{par:simple} the input file for the simple chemistry is discussed.
+The chemistry mechanism is explained in Section \ref{par:mozart}.
+
+More information on the dynamics and chemistry of the model and its performance can be found in the article:
+
+\vspace{0.5cm}
+
+The role of boundary layer dynamics on the diurnal evolution of isoprene and the hydroxyl radical over tropical forest (2011)
+Vil\`a-Guerau de Arellano J, Patton E.G, Karl T., van den Dries K., Barth M. C and Orlando J. J. {\it J. Geophys-Res-Atmospheres}.
+
+
+
+\chapter{Namoptions}\label{chapter:namoptions}
+
+All options that can be set for experiments using the combined version of MXLCH will be discussed in the following paragraphs. For all name lists, the options are given with their default values, possible values, a description and the unit. The possible values are denoted by an $x$. 
+
+\section{Namelist NAMRUN}\label{par:namrun}
+
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+%        \multicolumn{5}{l}{\small \it Continued from previous page}\\
+%        \multicolumn{5}{c}{}\\
+%        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+%        \hline &&&&\\
+  }
+  \tabletail{
+%        &&&&\\\hline
+%        \multicolumn{5}{c}{}\\
+%        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{6.3cm}|l|}
+  outdir	& 'RUN00'		& $x = '\left<\text{NAME}\right>'$	& Name of output folder 	& -\\
+  time		& 86400			& $x \in \mathbb{N} $								& Simulated time					& s\\
+  dtime		& 1				&	$x \in \mathbb{R}, \quad x > 0$		& Timestep								&	s\\
+  atime		& 60				& $x \in \mathbb{R}, \quad x > 0$		& Time interval for statistics	&	s\\
+  atime\_vert	&	1800	& $x \in \mathbb{R}, \quad x > 0$		& Time interval for vertical profile statistics	&	s\\
+  h\_max	&	3000			& $x \in \mathbb{R}, \quad x > 0$		& Maximum height of simulated domain	&	m\\
+  latt		&	0					& $x \in \mathbb{R}, \quad -90 \leq x \leq 90$	&	Latitude of simulated location	&	$\,^{\circ}$ \\
+  long		&	0					&	$x \in \mathbb{R}, \quad 0 \leq x \leq 360$		& Longitude	of simulated location	& $\,^{\circ}$\\
+  day			& 80				&	$x \in \mathbb{N}, \quad 1 \leq x \leq 365$		&	Julian day of the year	&	-\\
+  hour		&	0					& $x \in \mathbb{R}, \quad 0 \leq x \leq 24$		& Local time at which the simulation starts	&	hr\\
+\end{supertabular}
+\end{center}
+
+\newpage
+\section{Namelist NAMDYN}\label{par:dynamics}
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+        \multicolumn{5}{l}{\small \it Continued from previous page}\\
+        \multicolumn{5}{c}{}\\
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tabletail{
+        &&&&\\\hline
+        \multicolumn{5}{c}{}\\
+        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{5cm}|l|}
+zi0		&	200			& $x \in \mathbb{R}, \quad x > 0$		& Initial boundary layer height	&	m\\
+beta	&	0.2			& $x \in \mathbb{R},\quad x \geq 0$	& Entrainment ratio								&	-\\
+wsls	&	0				&	$x \in \mathbb{R}$								&	Flow divergence factor for subsidence	& s$^{-1}$\\
+wthetasmax	& 0	&	$x \in \mathbb{R}$								&	Maximum surface kinematic heat flux for standard flux profiles	& K m s$^{-1}$\\
+c\_fluxes	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& If true all fluxes are constant. It is better to use the options in Paragraph \ref{par:namflux}.	& -\\
+gamma	&	0.006		&	$x \in \mathbb{R}, \quad x \geq 0$		& Potential temperature lapse rate in the free troposphere	&	K m$^{-1}$\\
+thetam0	& 295		&	$x \in \mathbb{R}, \quad x > 0$		& Initial mixed layer potential temperature	&	K\\
+dtheta0	&	4			&	$x \in \mathbb{R},\quad x \geq 0$	& Initial potential temperature jump	&	K\\
+advtheta&	0				&	$x \in \mathbb{R}$								&	Advection of potential temperature	& K s$^{-1}$\\
+ladvecFT& .false. &	$x\in\{\text{.false.},\text{.true.}\}$	& If true advection is also applied for free troposphere.	& -\\
+pressure	&	1013	&	$x \in \mathbb{R}, \quad x > 0$	& Air pressure in the boundary layer	&	Pa\\
+wqsmax	&	0			&	$x \in \mathbb{R}$								&	Maximum surface kinematic moisture flux for standard flux profiles	& g kg$^{-1}$ m s$^{-1}$\\
+gammaq	&	0			&	$x \in \mathbb{R}$								& Specific humidity lapse rate in the free troposphere	&	g kg$^{-1}$ m$^{-1}$\\
+qm0		& 0				&	$x \in \mathbb{R}, \quad x \geq 0$		& Initial mixed layer specific humidity	&	g kg$^{-1}$\\
+dq0		&	0				&	$x \in \mathbb{R},\quad x \geq - \text{qm0}$	& Initial specific humidity jump	&	g kg$^{-1}$\\
+advq	&	0				&	$x \in \mathbb{R}$								&	Advection of specific humidity	& g kg$^{-1}$ s$^{-1}$\\
+wcsmax	&	0			&	$x \in \mathbb{R}$								&	Maximum surface kinematic tracer flux for standard flux profiles	& ppb m s$^{-1}$\\
+gammac	&	0			&	$x \in \mathbb{R}$								& Tracer lapse rate in the free troposphere	&	ppb m$^{-1}$\\
+cm0		& 0				&	$x \in \mathbb{R}, \quad x \geq 0$		& Initial mixed layer tracer concentration	&	ppb\\
+dc0		&	0				&	$x \in \mathbb{R},\quad x \geq - \text{qm0}$	& Initial tracer concentration jump	&	ppb\\
+c\_ustr	&	.true.	&	$x\in\{\text{.false.},\text{.true.}\}$	& If true the momentum fluxes (and friction velocity) are constant.	& -\\
+z0		&	0.03		&	$x \in \mathbb{R}, \quad x > 0$		& Roughness length	&	m\\
+uws0	&	0				&	$x \in \mathbb{R}$								&	Initial surface ($x$-)momentum flux	& m$^{2}$ s$^{-2}$\\
+vws0	&	0				&	$x \in \mathbb{R}$								&	Initial surface ($y$-)momentum flux	& m$^{2}$ s$^{-2}$\\
+gammau	&	0			& $x \in \mathbb{R}$								&	Lapse rate of $u$ in the free troposphere	& s$^{-1}$\\
+gammav	&	0			& $x \in \mathbb{R}$								&	Lapse rate of $v$ in the free troposphere	& s$^{-1}$\\
+um0		&	0				&	$x \in \mathbb{R}$								&	Initial $u$ in the mixed layer	& m s$^{-1}$\\
+vm0		&	0				&	$x \in \mathbb{R}$								&	Initial $v$ in the mixed layer	& m s$^{-1}$\\
+ug		&	0				&	$x \in \mathbb{R}$								&	Geostrophic wind in the $x$-direction	& m s$^{-1}$\\
+vg		&	0				&	$x \in \mathbb{R}$								&	Geostrophic wind in the $y$-direction	& m s$^{-1}$\\
+lencroachment & .false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enables encroachment	& -\\
+\end{supertabular}
+\end{center}
+
+\section{Namelist NAMSURFLAYER}\label{par:namsl}
+
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+%        \multicolumn{5}{l}{\small \it Continued from previous page}\\
+%        \multicolumn{5}{c}{}\\
+%        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+%        \hline &&&&\\
+  }
+  \tabletail{
+%        &&&&\\\hline
+%        \multicolumn{5}{c}{}\\
+%        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{6.3cm}|l|}
+  lsurfacelayer		&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable or disable surface layer	& -\\
+  z0m		&	0.03		&	$x \in \mathbb{R}, \quad x > 0$		& Roughness length momentum	&	m\\
+  z0h		&	0.03		&	$x \in \mathbb{R}, \quad x > 0$		& Roughness length heat	&	m\\
+\end{supertabular}
+\end{center}
+\newpage
+\section{Namelist NAMRAD}\label{par:namrad}
+
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+%        \multicolumn{5}{l}{\small \it Continued from previous page}\\
+%        \multicolumn{5}{c}{}\\
+%        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+%        \hline &&&&\\
+  }
+  \tabletail{
+        &&&&\\\hline
+        \multicolumn{5}{c}{}\\
+        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{6.3cm}|l|}
+  lradiation	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable or disable radiation	& -\\
+  cc		&	0		&	$x \in \mathbb{R}, \quad 0 \leq x \leq 1$		& Cloud cover	&	-\\
+  S0		&	1368	&	$x \in \mathbb{R}, \quad  x > 0$		& Incoming shortwave solar radiation	&	W m$^{-2}$\\
+  albedo	&	0.2		&	$x \in \mathbb{R}, \quad 0 \leq x \leq 1$		& Albedo	&	-\\
+\end{supertabular}
+\end{center}
+
+\section{Namelist NAMSURFACE}\label{par:namsurface}
+
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+        \multicolumn{5}{l}{\small \it Continued from previous page}\\
+        \multicolumn{5}{c}{}\\
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tabletail{
+        &&&&\\\hline
+        \multicolumn{5}{c}{}\\
+        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{6.3cm}|l|}
+  llandsurface	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable or disable interactive land surface	& -\\
+  Qtot		&	400	&	$x \in \mathbb{R}$		& Net total radiation energy (recalculated if lradiation = .true.) 	&	W m$^{-2}$\\
+  Ts        &   thetam0 & $x \in \mathbb{R}, \quad x > 0$ & Initial surface temperature & K\\
+  wwilt		&   0.314 &	$x \in \mathbb{R}, \quad x \geq 0$ & Wilting point	& m$^3$ m$^{-3}$\\
+  w2		&   0.420 &	$x \in \mathbb{R}, \quad x \geq 0$ & Volumetric water content deeper soil layer	& m$^3$ m$^{-3}$\\
+  wg		&   0.400 &	$x \in \mathbb{R}, \quad x \geq 0$ & Volumetric water content top soil layer	& m$^3$ m$^{-3}$\\
+  wfc		&   0.491 &	$x \in \mathbb{R}, \quad x \geq 0$ & Volumetric water content field capacity	& m$^3$ m$^{-3}$\\
+  wsat		&   0.600 &	$x \in \mathbb{R}, \quad x \geq 0$ & Saturated volumetric water content	& m$^3$ m$^{-3}$\\
+  CLa		& 0.083	& $x \in \mathbb{R}, \quad x \geq 0$ & Clapp and Hornberger retention curve parameter a & -\\
+  CLb		& 11.4	& $x \in \mathbb{R}, \quad x \geq 0$ & Clapp and Hornberger retention curve parameter b & -\\
+  CLc		& 12.0	& $x \in \mathbb{R}, \quad x \geq 0$ & Clapp and Hornberger retention curve parameter c & -\\
+  C1sat		& 0.342	& $x \in \mathbb{R}, \quad x \geq 0$ & Coefficient force term moisture & -\\
+  C2ref		& 0.3	& $x \in \mathbb{R}, \quad x \geq 0$ & Coefficient restore term moisture & -\\
+  gD		& 0.0	& $x \in \mathbb{R}, \quad x \geq 0$ & VPD correction factor for rs & -\\
+  rsmin		& 0.0		& $x \in \mathbb{R}, \quad x \geq 0$ & Minimum resistance of transpiration & s m$^{-1}$\\
+  rssoilmin		& 0.0		& $x \in \mathbb{R}, \quad x \geq 0$ & Minimum resistance of soiltranspiration & s m$^{-1}$\\
+  LAI		& 1.0	& $x \in \mathbb{R}, \quad x \geq 0$ & Leave area index & m$^{2}$ m$^{-2}$\\
+  cveg		& 1.0	& $x \in \mathbb{R}, 0 \leq \quad x \leq 1$ & Vegetation fraction & -\\
+  Tsoil		& 285	& $x \in \mathbb{R}, \quad x > 0$ & Initial temperature top soil layer & K\\
+  T2		& 285	& $x \in \mathbb{R}, \quad x > 0$ & Temperature deeper soil layer & K\\
+  Wl		& 0.0	& $x \in \mathbb{R}, \quad x \geq 0$ & Equivalent water layer depth for wet vegetation & m\\
+  Lambda	& 5.9	& $x \in \mathbb{R}, \quad x \geq 0$ & Thermal conductivity skin layer divided by depth & W m$^{-2}$ K$^{-1}$\\
+  CGsat		& $3.6 \cdot 10^{-6}$ & $x \in \mathbb{R}, \quad x \geq 0$ & Saturated soil conductivity for heat & K m$^2$ J$^{-1}$\\
+  lrsAgs	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable or disable A-gs model for surface resistances	& -\\
+  lCO2Ags	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable or disable A-gs model for CO$_2$ surface fluxes	& -\\
+  CO2comp298 & 68.5 & $x \in \mathbb{R}, \quad x \geq 0$ & CO$_2$ compensation concentration & mg m$^{-3}$\\
+  Q10CO2	& 1.5 & $x \in \mathbb{R}, \quad x > 0$ & Parameter to calculate CO$_2$ compensation concentration & -\\
+  gm298	&	7	& $x \in \mathbb{R}, \quad x > 0$ & Mesophyll conductance at 298 K & mm s$^{-1}$ \\
+  Ammax298	& 2.2	& $x \in \mathbb{R}, \quad x > 0$ & CO$_2$ maximal primary productivity & mg m$^{-2}$ s$^{-1}$ \\
+  Q10gm	& 2	& $x \in \mathbb{R}, \quad x > 0$ & Parameter to calculate mesophyll conductance & -\\
+  T1gm	&  278	& $x \in \mathbb{R}, \quad x > 0$ & Reference temperature to calculate mesophyll conductance & K \\
+  T2gm	&  301	& $x \in \mathbb{R}, \quad x > 0$ & Reference temperature to calculate mesophyll conductance & K \\
+  Q10Am	& 2	& $x \in \mathbb{R}, \quad x > 0$ & Parameter to calculate maximal primary productivity & -\\
+  T1Am	&  281	& $x \in \mathbb{R}, \quad x > 0$ & Reference temperature to calculate maximal primary productivity & K \\
+  T2Am	&  311	& $x \in \mathbb{R}, \quad x > 0$ & Reference temperature to calculate maximal primary productivity & K \\
+  f0	& 0.89	& $x \in \mathbb{R}, \quad x > 0$ & Maximum value Cfrac & -\\
+  ad	& 0.07	& $x \in \mathbb{R}, \quad x > 0$ & Regression coefficient to calculate Cfrac & kPa$^{-1}$\\
+  alpha0& 0.017	& $x \in \mathbb{R}, \quad x \geq 0$ & Initial  low light conditions & mg J$^{-1}$\\
+  Kx	& 0.7	& $x \in \mathbb{R}, \quad x > 0$ & Extinction coefficient PAR	& -\\
+  gmin	& $2.5 \cdot 10^{-4}$ & $x \in \mathbb{R}, \quad x \geq 0$ & Cuticular (minimum) conductance	& m s$^{-1}$\\
+  Cw	& $1.6 \cdot 10^{-3}$	& $x \in \mathbb{R}, \quad x \geq 0$ & Constant water stress correction	& -\\
+  wsmax	& 0.55	& $x \in \mathbb{R}, \quad x > 0$	& Upper reference value soil water	& -\\
+  wsmin	& 0.005	& $x \in \mathbb{R}, \quad x \geq 0$	& Lower reference value soil water	& -\\
+  R10	& 0.23	& $x \in \mathbb{R}, \quad x > 0$ & Respiration at 10 {\degrees}C & mg m$^{-2}$ s$^{-1}$\\
+\end{supertabular}
+\end{center}
+
+\newpage
+\section{Namelist NAMCHEM}\label{par:namchem}
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+        \multicolumn{5}{l}{\small \it Continued from previous page}\\
+        \multicolumn{5}{c}{}\\
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tabletail{
+        &&&&\\\hline
+        \multicolumn{5}{c}{}\\
+        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{6cm}|l|}
+lchem		&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable or disable chemistry	& -\\
+lcomplex	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Choice between complex chemical scheme and simplified scheme	& -\\
+lwritepl& .true.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enable the output of production and loss terms per chemical	& -\\
+ldiuvar	&	.true.	&	$x\in\{\text{.false.},\text{.true.}\}$	& If false the UV radiation during day is calculating at time h\_ref	& -\\
+h\_ref	& 12			& $x \in \mathbb{R}, \quad 0 \leq x \leq 24$	& Reference time for calculated UV radiation if ldiuvar is set to .false.	&	hr\\
+lflux		&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& If set to .true. the times of sunrise and sunset are input. The options in Paragraph \ref{par:namflux} are preferred.	& -\\
+fluxstart	&	0			& $x \in \mathbb{R}, \quad 0 \leq x \leq 24$	& Time of sunrise if lflux is set to .true.	&	hr\\
+fluxend		&	0			& $x \in \mathbb{R}, \quad 0 \leq x \leq 24$	& Time of sunset if lflux is set to .true.	&	hr\\
+pressure\_ft	&	pressure	&	$x \in \mathbb{R}, \quad x > 0$		& Air pressure in the free troposphere	&	Pa\\
+lchconst	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Switch to calculate reaction rates using reference temperatures, humidities and pressures instead of actual values	& -\\
+t\_ref\_cbl	&	298		& $x \in \mathbb{R}, \quad x > 0$				& Reference temperature in the boundary layer	&	K\\
+p\_ref\_cbl	&	1013.5	& $x \in \mathbb{R}, \quad x > 0$			& Reference pressure in the boundary layer	&	Pa\\
+q\_ref\_cbl	&	10		& $x \in \mathbb{R}, \quad x \geq 0$		& Reference specific humidity in the boundary layer	&	g kg$^{-1}$\\
+t\_ref\_ft	&	298		& $x \in \mathbb{R}, \quad x > 0$				& Reference temperature in the free troposphere	&	K\\
+p\_ref\_ft	&	1013.5	& $x \in \mathbb{R}, \quad x > 0$			& Reference pressure in the free troposphere	&	Pa\\
+q\_ref\_ft	&	10		& $x \in \mathbb{R}, \quad x \geq 0$		& Reference specific humidity in the free troposphere	&	g kg$^{-1}$\\
+\end{supertabular}
+\end{center}
+ 
+\newpage
+\section{Namelist NAMFLUX}\label{par:namflux}
+
+\begin{center}
+	  \tablefirsthead{
+        \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+        \hline &&&&\\
+  }
+  \tablehead{
+       \multicolumn{5}{l}{\small \it Continued from previous page}\\
+       \multicolumn{5}{c}{}\\
+      \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default} & \multicolumn{1}{c}{Possible values} & \multicolumn{1}{c}{Description} & \multicolumn{1}{c}{Unit}\\
+       \hline &&&&\\
+  }
+  \tabletail{
+       &&&&\\\hline
+       \multicolumn{5}{c}{}\\
+        \multicolumn{5}{r}{\small \it Continued on next page}\\
+  }
+  \tablelasttail{
+        &&&&\\\hline
+  }
+\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{5cm}|l|}
+offset\_wt		& 0		& $x \in \mathbb{R}$		& Offset for the kinematic heat flux			& K m s$^{-1}$\\
+offset\_wq		& 0		& $x \in \mathbb{R}$		& Offset for the kinematic moisture flux	& g kg$^{-1}$ m s$^{-1}$\\
+& & & & \\
+\multirow{15}{*}{function\_wt}	&	\multirow{15}{*}{2}		&	\multirow{15}{*}{$x \in \{0,1,2,3\}$}		& Shape of the kinematic heat flux	& \multirow{15}{*}{-}\\
+& & & 0 = No flux & \\
+& & & 1 = Constant flux & \\
+& & & 2 = Sinusoid flux evolution with a start and an end time & \\
+& & & 3 = Constant flux with a start and an end time & \\
+& & & 4 = Cosine shaped flux with a start and an end time. Equal to 0 at start and end and to wthetasmax in the middle. (Standard cosine is multiplied by -wthetasmax/2 and shifted by wthetasmas/2.)& \\
+& & & & \\  
+function\_wq	&	2				&	$x \in \{0,1,2,3\}$													&	Shape of the kinematic moisture flux (see function\_wt)	& -\\
+starttime\_wt	&	sunrise	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the heat flux starts in case of functions 2 and 3	&	s\\
+endtime\_wt		&	sunset	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the heat flux ends in case of functions 2 and 3		&	s\\
+starttime\_wq	&	sunrise	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the moisture flux starts in case of functions 2 and 3	&	s\\
+endtime\_wq		&	sunset	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the moisture flux ends in case of functions 2 and 3		&	s\\
+starttime\_adv	&	sunrise	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the advection of potential temperature and moisture starts	&	s\\
+endtime\_adv		&	sunset	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the advection of potential temperature and moisture ends		&	s\\
+starttime\_chem	&	sunrise	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the chemical emissions start in case of functions 2 and 3	&	s\\
+endtime\_chem		&	sunset	& $x \in \mathbb{R}, \quad 0 \leq x \leq 86400$	& Time after which the chemical emissions end in case of functions 2 and 3		&	s\\
+\end{supertabular}
+\end{center}
+
+
+\chapter{Chemical mechanisms: input files}\label{chapter:inputfiles}
+In this chapter the other files with input than the file with options in namelists, namoptions, are discussed. 
+In case of {\it reduced} chemistry, we describe only one files
+{\bf chem.inp}. In case of {\it complex} 
+chemistry two files are required:
+{\bf chem.inp} and {\bf chemicals.txt}
+
+Please note that the chem.inp files are different for {\it reduced} and
+{\it complex}. In Section \ref{par:simple} 
+the {\it reduced} chemistry is explained and the input files for {\it complex} chemistry are described in Section \ref{par:mozart}.
+
+\section{Input files for reduced chemistry}\label{par:simple}
+For chemistry in this setup 1 extra file is needed, chem.inp. 
+In this file, lines starting with an \# are considered comments. 
+The first uncommented line should start with an \% followed by two integers. 
+The first integer denotes the total number of chemicals (including passive tracers) and the second integer represents the number of reactions specified. 
+These numbers are upper limits, so the exact numbers are not important but they should be large enough. 
+The second uncommented line should start with an @. 
+This is followed by a line with the names of all chemicals. 
+The row below that the corresponding initial boundary layer concentrations are specified in ppb, followed by a row with the initial free tropospheric 
+concentrations in ppb. The line below that specifies in order the emissions of the chemicals at the surface in ppb m s$^{-1}$. 
+The line after that consists of a row of integers, specifying the shape of the emission evolution for the corresponding concentrations. 
+These integers correspond to the same functions as specified in Section \ref{par:namflux}. The functions are:
+\begin{itemize*}
+\item[0:] No emission at all
+\item[1:] A constant emission
+\item[2:] An emission that evolves in time as a sinusoid. It is 0 until starttime\_chem (Paragraph \ref{par:namflux}) and after endtime\_chem. In between the emission is a sinusoid whos phase ranges from 0 to $\pi$. The maximum value of the sinusoid is given by the emission value listed in the line above.
+\item[3:] An emission that is constant during daytime. It is 0 until starttime\_chem (Paragraph \ref{par:namflux}) and after endtime\_chem. In between the emission is constantly equal to the emission value listed in the line above.
+\item[4:] An emission that evolves in time as a cosine. It is 0 until starttime\_chem (Paragraph \ref{par:namflux}) and after endtime\_chem. In between the emission behaves like a flipped cosine (a cosine
+with a phase ranging from $-\pi$ to $\pi$) with a mean and an amplitude which are both equal to half the emission value listed in the line above.
+\item[5:] Dry deposition of atmospheric compounds according to $-v_c~C$. The deposition velocity $v_c$ in m s$^{-1}$ needs to be specified.
+\end{itemize*}
+After these specific lines all other lines denote chemical reactions that are evaluated. MXLCH stops reading the input file after it encounters a \$ at the beginning of a line. A line starting with \$ is needed after all chemical reactions are specified.\\
+The lines with the chemical reactions consist out of 12 columns, listing in order the variables kr2nd, name, raddep, func1, $A$, $B$, $C$, $D$, $E$, $F$, $G$ and reaction. The meaning of these columns is:
+\begin{itemize}
+\item[kr2nd:] Deprecated: put a random number here
+\item[name:]  Name of the reaction: used for output
+\item[raddep:] Flag for UV-radiation dependent reaction constants: 1 = true, 0 = false
+\item[func1:] Flag to choose the definition of the reaction rate constant,$k$:\\ $\,$ \\
+				If raddep = 0:\\ 
+				\begin{tabular}{lcl}
+				func1 = 1 & : & $k=A$ [cm$^3$ mol$^{-1}$ s$^{-1}$]  \\
+				func1 = 2 & : & $k = A \cdot \exp^{B/T}$ [cm$^3$ mol$^{-1}$ s$^{-1}$] \\
+				func1 = 3 & : & $k = A \cdot \left(T/B\right)^C \cdot \exp^{D/T}$ [cm$^3$ mol$^{-1}$ s$^{-1}$]\\
+				func1 = 4 & : & $k = \frac{k' \cdot k"}{k'+ k"}\cdot G $ [cm$^3$ mol$^{-1}$ s$^{-1}$]\\
+				          &   & $k'= A \cdot \left(T/300\right)^B \cdot \exp^{C/T} \cdot [M]$\\
+				          &   & $k"= D \cdot \left(T/300\right)^E \cdot \exp^{F/T}$\\
+				func1 = 5 & : & like func1 = 4, but in [s$^{-1}$]\\
+				func1 = 6 & : & $k = \left(k'+ k"\right)\cdot\left(1+k'"\right)$ [cm$^3$ mol$^{-1}$ s$^{-1}$])\\
+						  & : & $k'= A \cdot \exp^{B/T}$\\
+						  & : & $k"= C \cdot \exp^{D/T}\cdot[M]$\\
+						  & : & $k'" = 1 + E \cdot \exp^{F/T}\cdot[H20]$\\
+				func1 = 7 & : & $k = A \cdot \left(T/B\right)^C \cdot \exp^{D/T}$ [cm$^6$ mol$^{-2}$ s$^{-1}$])
+				\end{tabular}
+				$\,$ \\ $\,$ \\
+				If raddep = 1:\\
+				\begin{tabular}{lcl}
+				func1 = 1 & : & $k=A$ [s$^{-1}$]\\
+				func1 = 2 & : & $k=A \cdot \exp^{B / \cos(\chi)}$ [s$^{-1}$]\\
+				func1 = 3 & : & $k=A \cdot \cos(\chi)^{B}$ [s$^{-1}$]\\
+				func1 = 4 & : & $k=A \cdot (\cos(\chi)^B) \cdot \frac{D \cdot [H2O] }{ D \cdot [H2O] + E \cdot [M]}$ [s$^{-1}$]\\
+				\end{tabular}
+				$\,$\\$\,$\\
+				In these equations, $[H2O]$ and $[M]$ are the concentrations of water and air molecules in the ambient air and 			$\chi$ is the solar zenith angle.\\
+\item[$A - G$:]	Constants used for the calculations
+\item[reaction:] The chemical equation. On the left hand side input chemicals are written with their stoichiometric coefficients. The chemicals are separated by ' + '. On the right hand side the output chemicals are written in a similar way. Input and output chemicals are separated by ' -$>$ '. If chemicals are enclosed in brackets they are just shown for information and are not used in the calculations. The stoichiometric coefficients for the input chemicals have to be integers.
+\end{itemize}
+An example chem.inp file describing a system of 2 reactions and 3 chemicals is shown on the next page.
+\newpage
+\# Input file for chemistry\\
+\# Reactants Reactions\\
+\% 3 2\\
+\# Chemicals\\
+\makebox[0.3 cm][l]{@} \makebox[1 cm][l]{1} \makebox[1 cm][l]{2} \makebox[1 cm][l]{3}\\
+\makebox[0.3 cm][l]{} \makebox[1 cm][l]{O2} \makebox[1 cm][l]{O3} \makebox[1 cm][l]{O1D}\\
+\makebox[0.3 cm][l]{} \makebox[1 cm][l]{0.2e09} \makebox[1 cm][l]{30.} \makebox[1 cm][l]{0.0}\\
+\makebox[0.3 cm][l]{} \makebox[1 cm][l]{0.2e09} \makebox[1 cm][l]{30.} \makebox[1 cm][l]{0.0}\\
+\makebox[0.3 cm][l]{} \makebox[1 cm][l]{0} \makebox[1 cm][l]{1.e-3} \makebox[1 cm][l]{0.0}\\
+\makebox[0.3 cm][l]{} \makebox[1 cm][l]{0} \makebox[1 cm][l]{2} \makebox[1 cm][l]{0}\\
+\#\\
+\makebox[1.5 cm][l]{\# Kr2nd}\makebox[1.1 cm][l]{Name}\makebox[0.9 cm][l]{Rad}\makebox[1.1 cm][l]{func1}\makebox[1.6 cm][l]{A}\makebox[1.1 cm][l]{B}\makebox[.7 cm][l]{C}\makebox[.7 cm][l]{D}\makebox[.7 cm][l]{E}\makebox[.7 cm][l]{F}\makebox[.7 cm][l]{G}\makebox[4.5 cm][l]{Reaction}\\
+\makebox[1.5 cm][l]{$\quad$ 1}\makebox[1.1 cm][l]{R01}\makebox[.9 cm][l]{1}\makebox[1.1 cm][l]{2}\makebox[1.6 cm][l]{3.83e-5}\makebox[1.1 cm][l]{-.575}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[1.9 cm][l]{O3 + (hv)}\makebox[.7 cm][l]{-$>$}\makebox[1.9 cm][l]{O1D + O2}\\
+\makebox[1.5 cm][l]{$\quad$ 2}\makebox[1.1 cm][l]{R02}\makebox[.9 cm][l]{0}\makebox[1.1 cm][l]{2}\makebox[1.6 cm][l]{3.30e-11}\makebox[1.1 cm][l]{55}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[.7 cm][l]{1.0}\makebox[1.9 cm][l]{O1D + O$2$}\makebox[.7 cm][l]{-$>$}\makebox[1.9 cm][l]{O3}\\
+\$ end of chemical reactions
+\newpage
+\section{Input files for complex chemistry}\label{par:mozart}
+For complex chemistry two input files are used next to the file 'namoptions'. These are chem.inp and chemicals.txt and are treated in Paragraphs \ref{par:mozartcheminp} and \ref{par:mozartchemicals} respectively.
+\subsection{chem.inp}\label{par:mozartcheminp}
+This file differs from the chem.inp file for simplified chemistry as described in Paragraph \ref{par:simple}. Again lines starting with an \# are considered comments. The first uncommented line should start with an \% followed by one integer which denotes the total number of chemical reactions specified. This number is an upper limits, so the exact number is not important if large enough. The lines after that are input for chemical reactions. MXLCH stops reading the input file after it encounters a \$ at the beginning of a line. A line starting with \$ is needed after all chemical reactions are specified.\\
+This input is provided in blocks of 2 lines. The first line contains the chemical equation. On the left hand side input chemicals are written with their stoichiometric coefficients. The chemicals are separated by ' + '. On the right hand side the output chemicals are written in a similar way. Input and output chemicals are separated by ' -$>$ '. If chemicals are enclosed in brackets they are just shown for information and are not used in the calculations. The stoichiometric coefficients for the input chemicals have to be integers. The second line contains, in order, the variables name, raddep, func1, $A$, $B$, $C$, $D$, $E$, $F$ and $G$. $A$ to $G$ are constants that can be used for the calculation of the reaction rate constant. Other than for the simplified chemistry, for complex chemistry the constants have to be specified only if they are used. So if the reaction rate constant is calculated using 3 constants, $D - G$ don't have to be specified. The name is used for the output and raddep is an integer set to either 1 or 0, representing whether the reaction is or is not a photolysis reaction using UV light. The variable func1 is a flag to choose the definition of the reaction rate constant,$k$:\\ $\,$\\
+				If raddep = 0:\\ 
+				\begin{tabular}{lcl}
+				func1 = 0 & : & $k=A$ [cm$^{3N}$ mol$^{-N}$ s$^{-1}$]  \\
+				func1 = 1 & : & $k = A \cdot \exp^{B/T}$ [cm$^{3N}$ mol$^{-N}$ s$^{-1}$] \\
+				func1 = 2 & : & $k = A \cdot (B/T)^C$ [cm$^{3N}$ mol$^{-N}$ s$^{-1}$] \\
+				func1 = 3 & : & $k = A \cdot \left(T/B\right)^C \cdot \exp^{D/T}$ [cm$^{3N}$ mol$^{-N}$ s$^{-1}$]\\
+				func1 = 4 & : & $k = \frac{k' \cdot k"}{k'+ k"}\cdot G $ [cm$^3$ mol$^{-1}$ s$^{-1}$]\\
+				          &   & $k'= A \cdot \left(T/300\right)^B \cdot \exp^{C/T} \cdot [M]$\\
+				          &   & $k"= D \cdot \left(T/300\right)^E \cdot \exp^{F/T}$\\
+				func1 = 5 & : & like func1 = 4, but in [s$^{-1}$]\\
+				func1 = 6 & : & $k = \left(k'+ k"\right)\cdot\left(1+k'"\right)$ [cm$^3$ mol$^{-1}$ s$^{-1}$])\\
+						  & : & $k'= A \cdot \exp^{B/T}$\\
+						  & : & $k"= C \cdot \exp^{D/T}\cdot[M]$\\
+						  & : & $k'" = 1 + E \cdot \exp^{F/T}\cdot[H20]$\\
+				func1 = 7 & : & $k = A \cdot \left(T/B\right)^C \cdot \exp^{D/T}$ [cm$^6$ mol$^{-2}$ s$^{-1}$])
+				\end{tabular}
+				$\,$ \\ $\,$ \\
+				If raddep = 1:\\
+				\begin{tabular}{lcl}
+				func1 = 1 & : & $k=A$ [s$^{-1}$]\\
+				func1 = 2 & : & $k=A \cdot \exp^{B / \cos(\chi)}$ [s$^{-1}$]\\
+				func1 = 3 & : & $k=A \cdot \cos(\chi)^{B}$ [s$^{-1}$]\\
+				func1 = 4 & : & $k=A \cdot (\cos(\chi)^B) \cdot \frac{D \cdot [H2O] }{ D \cdot [H2O] + E \cdot [M]}$ [s$^{-1}$]\\
+				func1 = 5 & : & $k=A \cdot \cos(\chi)^B \cdot \exp^{-C /\cos(\chi)}$ [s$^{-1}$]\\
+				func1 = 6 & : & $k=A \cdot B^{\cos(\chi)} \cdot \cos(\chi)^C$ [s$^{-1}$]\\
+				\end{tabular}
+				$\,$\\$\,$\\
+				\noindent In these equations, $[H2O]$ and $[M]$ are the concentrations of water and air molecules in the ambient air and $\chi$ is the solar zenith angle. $N$ is equal to the total reaction order minus 1.
+An example chem.inp file describing a system of 2 reactions is shown below.
+\vspace{15mm}
+$\,$\\
+\centerline{\line(1,0){500}}
+\vspace{15mm}
+\addtolength{\leftskip}{-\parindent}
+\# Input file for chemical reactions\\
+\# Amount of reactions\\
+\% 2\\
+\# Reaction\\
+\makebox[1.5 cm][l]{\#}\makebox[1.6 cm][l]{Name}\makebox[1.6 cm][l]{Rad}\makebox[1.6 cm][l]{func1}\makebox[1.6 cm][l]{A}\makebox[1.6 cm][l]{B}\makebox[1.6 cm][l]{C}\makebox[1.6 cm][l]{D}\makebox[1.6 cm][l]{E}\makebox[1.6 cm][l]{F}\makebox[1.1 cm][l]{G}\\
+\makebox[0.5 cm][l]{}\makebox[1.5 cm][l]{O3}\makebox[1.5 cm][l]{+ (hv)}-$>$ \makebox[1.5 cm][l]{O1D}\makebox[1.5 cm][l]{+ O2}\\
+\makebox[1.5 cm][l]{}\makebox[1.6 cm][l]{R01}\makebox[1.6 cm][l]{1}\makebox[1.6 cm][l]{2}\makebox[1.6 cm][l]{3.83e-05}\makebox[1.1 cm][l]{-0.575}\\
+\makebox[0.5 cm][l]{}\makebox[1.5 cm][l]{O1D}\makebox[1.5 cm][l]{+ O2}-$>$ \makebox[1.5 cm][l]{O3}\\
+\makebox[1.5 cm][l]{}\makebox[1.6 cm][l]{R02}\makebox[1.6 cm][l]{0}\makebox[1.6 cm][l]{2}\makebox[1.6 cm][l]{3.30e-11}\makebox[1.1 cm][l]{55}\\
+\$ end of chemical reactions\\
+\addtolength{\leftskip}{\parindent}
+\vspace{15mm}
+$\,$\\
+\centerline{\line(1,0){500}}
+\vspace{15mm}
+\subsection{chemicals.txt}\label{par:mozartchemicals}
+When using the complex chemical scheme, the chemicals are specified in the file chemicals.txt. Again lines starting with an \# are considered comments. The first uncommented line should start with an \% followed by one integer which denotes the total number of chemical species. This number is an upper limits, so the exact number is not important if large enough. The lines after that are input for the chemical species and their initial concentrations and their emissions. MXLCH stops reading the input file after it encounters a \$ at the beginning of a line. A line starting with \$ is needed after all chemical species are specified.\\
+The lines contain, in order, the species name, the initial concentration in the boundary layer in ppb, the initial concentration in the free troposphere in ppb, the emission at the surface in ppb m s$^{-1}$, an integer specifying the shape of the emission evolution and an integer that specifies whether production and loss statistics should be generated for that species (0 = write no output, 1 = write output). The integer specifying the shape of the emission evolution is exactly equal to the one described in Paragraph \ref{par:simple}, so
+\begin{itemize*}
+\item[0:] No emission at all
+\item[1:] A constant emission
+\item[2:] An emission that evolves in time as a sinusoid. It is 0 until starttime\_chem (Paragraph \ref{par:namflux}) and after endtime\_chem. In between the emission is a sinusoid whos phase ranges from 0 to $\pi$. The maximum value of the sinusoid is given by the emission value listed in the line above.
+\item[3:] An emission that is constant during daytime. It is 0 until starttime\_chem (Paragraph \ref{par:namflux}) and after endtime\_chem. In between the emission is constantly equal to the emission value listed in the line above.
+\item[4:] An emission that evolves in time as a cosine. It is 0 until starttime\_chem (Paragraph \ref{par:namflux}) and after endtime\_chem. In between the emission behaves like a flipped cosine (a cosine whos phase ranges from $-\pi$ to $\pi$) with a mean and an amplitude which are both equal to half the emission value listed in the line above.
+\item[5:] Dry deposition of atmospheric compounds according to $-v_c~C$. The deposition velocity $v_c$ in m s$^{-1}$ needs to be specified.
+\end{itemize*}
+An example chemicals.txt file describing a system with 3 chemical species is shown below.
+\vspace{15mm}
+$\,$\\
+\centerline{\line(1,0){500}}
+\vspace{15mm}
+\addtolength{\leftskip}{-\parindent}
+\# Input file for chemical species\\
+\# Amount of compounds\\
+\% 3\\
+\makebox[4cm][l]{\# Chemical}\makebox[2cm][l]{C\_CBL}\makebox[2cm][l]{C\_FT}\makebox[2cm][l]{Emission}\makebox[2cm][l]{Function}\makebox[2cm][l]{Statistics}\\
+\makebox[4cm][l]{O2}\makebox[2cm][l]{0.2e09}\makebox[2cm][l]{0.2e09}\makebox[2cm][l]{0.0}\makebox[2cm][l]{0}\makebox[2cm][l]{1}\\
+\makebox[4cm][l]{O3}\makebox[2cm][l]{30.0}\makebox[2cm][l]{30.0}\makebox[2cm][l]{1.e-3}\makebox[2cm][l]{2}\makebox[2cm][l]{1}\\
+\makebox[4cm][l]{O1D}\makebox[2cm][l]{0.0}\makebox[2cm][l]{0.0}\makebox[2cm][l]{0.0}\makebox[2cm][l]{0}\makebox[2cm][l]{1}\\
+\$ end of chemical species\\
+\addtolength{\leftskip}{\parindent}
+\vspace{15mm}
+$\,$\\
+\centerline{\line(1,0){500}}
+
+\end{document}
