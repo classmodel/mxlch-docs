@@ -172,10 +172,12 @@ All options that can be set for experiments using the combined version of MXLCH 
   \tablelasttail{
         &&&&\\\hline
   }
-\begin{supertabular}{|l|p{1.6cm}|p{4cm}|p{5cm}|l|}
+\begin{supertabular}{|l|p{1.2cm}|p{3.4cm}|p{5cm}|l|}
 zi0		&	200			& $x \in \mathbb{R}, \quad x > 0$		& Initial boundary layer height	&	m\\
 beta	&	0.2			& $x \in \mathbb{R},\quad x \geq 0$	& Entrainment ratio								&	-\\
+lenhancedentrainment	&	.false.			&	$x\in\{\text{.false.},\text{.true.}\}$		&	If true, the entrainment is enhanced by wind shear ($u_*$) 	& -\\
 wsls	&	0				&	$x \in \mathbb{R}$								&	Flow divergence factor for subsidence	& s$^{-1}$\\
+lfixedlapserates	&	.false.			&	$x\in\{\text{.false.},\text{.true.}\}$		&	If true, the (enhancing) effect of subsidence on free tropospheric gradients is omitted	& -\\
 wthetasmax	& 0	&	$x \in \mathbb{R}$								&	Maximum surface kinematic heat flux for standard flux profiles	& K m s$^{-1}$\\
 c\_fluxes	&	.false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& If true all fluxes are constant. It is better to use the options in Paragraph \ref{par:namflux}.	& -\\
 gamma	&	0.006		&	$x \in \mathbb{R}, \quad x \geq 0$		& Potential temperature lapse rate in the free troposphere	&	K m$^{-1}$\\
@@ -204,9 +206,12 @@ vm0		&	0				&	$x \in \mathbb{R}$								&	Initial $v$ in the mixed layer	& m s$^
 ug		&	0				&	$x \in \mathbb{R}$								&	Geostrophic wind in the $x$-direction	& m s$^{-1}$\\
 vg		&	0				&	$x \in \mathbb{R}$								&	Geostrophic wind in the $y$-direction	& m s$^{-1}$\\
 lencroachment & .false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enables encroachment	& -\\
+lscu & .false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enables shallow cumulus mass-flux parametrization	& -\\
+lrelaxdz & .false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& If true, LCL - $z_i$ is nudged to calculated value by time-scale $\tau$, rather than being set to that value	& -\\
+tau & 7200 & $x \in \mathbb{R}$	& Time-scale for nudging transition layer depth	& s\\
 \end{supertabular}
 \end{center}
-
+\newpage
 \section{Namelist NAMSURFLAYER}\label{par:namsl}
 
 \begin{center}
@@ -234,7 +239,7 @@ lencroachment & .false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enables encro
   z0h		&	0.03		&	$x \in \mathbb{R}, \quad x > 0$		& Roughness length heat	&	m\\
 \end{supertabular}
 \end{center}
-\newpage
+%\newpage
 \section{Namelist NAMRAD}\label{par:namrad}
 
 \begin{center}
@@ -330,10 +335,11 @@ lencroachment & .false.	&	$x\in\{\text{.false.},\text{.true.}\}$	& Enables encro
   wsmax	& 0.55	& $x \in \mathbb{R}, \quad x > 0$	& Upper reference value soil water	& -\\
   wsmin	& 0.005	& $x \in \mathbb{R}, \quad x \geq 0$	& Lower reference value soil water	& -\\
   R10	& 0.23	& $x \in \mathbb{R}, \quad x > 0$ & Respiration at 10 {\degrees}C & mg m$^{-2}$ s$^{-1}$\\
+  Eact0	& $53.3\cdot 10^3$ & $x \in \mathbb{R}, \quad x > 0$ & Activation energy & J kmol$^{-1}$\\
 \end{supertabular}
 \end{center}
 
-\newpage
+%\newpage
 \section{Namelist NAMCHEM}\label{par:namchem}
 \begin{center}
 	  \tablefirsthead{
@@ -374,7 +380,7 @@ q\_ref\_ft	&	10		& $x \in \mathbb{R}, \quad x \geq 0$		& Reference specific humi
 \end{supertabular}
 \end{center}
  
-\newpage
+%\newpage
 \section{Namelist NAMFLUX}\label{par:namflux}
 
 \begin{center}
